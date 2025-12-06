@@ -28,8 +28,8 @@ void button_press_detect(); // prototype of function to detect button press
 void print_result();        // prototype of function to print the results
 void measure_speed(
     uint32_t); // prototype of function to measure the current speed
-unsigned int get_enc_wheel_time(); // prototype of function to get time measured
-                                   // by the encoder wheel
+unsigned int get_enc_wheel_time(); // prototype of function to get time
+                                   // measured by the encoder wheel
 uint32_t get_enc_period(); // prototype of encoder wheel time measurement
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -124,8 +124,8 @@ int main(void) {
 //// FUNCTION IMPLEMENTATIONS ////
 void init() {
   uart_init();   // communication with PC - debugging
-  io_redirect(); // redirect printf to uart, text will be shown on PC or Nextion
-                 // screen
+  io_redirect(); // redirect printf to uart, text will be shown on PC or
+                 // Nextion screen
   i2c_init();    // serial communication protocol
   pwm1_init();   // PWM signal at pin PD5 (4 kHz)
   adc_init();    // ADC module init
@@ -250,7 +250,7 @@ void button_press_detect() {
   if (button1_page == 0x00 && button1_ID == 0x01 &&
       button1_release ==
           0x00) { // checking on which button has been pressed; it is true if
-                  // button1 on page0 would be released
+    // button1 on page0 would be released
     printf("page page1%c%c%c", 255, 255, 255); // changes to page 2
   }
 
