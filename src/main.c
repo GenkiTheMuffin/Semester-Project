@@ -83,37 +83,36 @@ int main(void)
           decrease power}
       }
       */
+    /*
+    // Display 2 numbers on the Nextion display //
+    printf("page0.n0.val=%d%c%c%c", 69, 255, 255, 255);
+    printf("page0.n0.val=%d%c%c%c", 420, 255, 255, 255);
+
+    // Read integer from the Nextion display  //
+    read_value(pReadBuffer, pReadValue);
+    printf("page0.n0.val=%d%c%c%c", 2 * (int)readValue, 255,255,255);
+    printf("page0.n1.val=%d%c%c%c", (int)readValue, 255,255,255);
+    */
+
+    // Measure time //
+    time_value = get_enc_period() / 1000; // gets encoder wheel time output in milliseconds
+    printf("\nTime between impulses: %u ms\n", time_value);
+
+    // Read voltage; ADC conversion//
+    measure_volt_adc();
+
+    // Button press detection on the Nextion display //
+    button_press_detect();
+
+    // Speed measurement //
+    measure_speed(time_value);
+
+    // Print results //
+    print_result();
+
+    _delay_ms(100);
   }
-  /*
-  // Display 2 numbers on the Nextion display //
-  printf("page0.n0.val=%d%c%c%c", 69, 255, 255, 255);
-  printf("page0.n0.val=%d%c%c%c", 420, 255, 255, 255);
-
-  // Read integer from the Nextion display  //
-  read_value(pReadBuffer, pReadValue);
-  printf("page0.n0.val=%d%c%c%c", 2 * (int)readValue, 255,255,255);
-  printf("page0.n1.val=%d%c%c%c", (int)readValue, 255,255,255);
-  */
-
-  // Measure time //
-  time_value = get_enc_period() / 1000; // gets encoder wheel time output in milliseconds
-  printf("\nTime between impulses: %u ms\n", time_value);
-
-  // Read voltage; ADC conversion//
-  measure_volt_adc();
-
-  // Button press detection on the Nextion display //
-  button_press_detect();
-
-  // Speed measurement //
-  measure_speed(time_value);
-
-  // Print results //
-  print_result();
-
-  _delay_ms(100);
-}
-return 0;
+  return 0;
 }
 
 //// FUNCTION IMPLEMENTATIONS ////
