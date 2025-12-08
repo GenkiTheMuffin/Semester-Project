@@ -20,6 +20,9 @@ void init() {
                  // enabled. 1024 clock prescaler*
   DDRB &= ~0x01; // PINB0 as input for ICP1 use
   PORTB |= 0x01; // Enable pullup
+
+  printf("page 0%c%c%c", 255, 255, 255); // init at 9600 baud.
+  _delay_ms(20);
 }
 
 uint32_t get_enc_period() {

@@ -33,26 +33,21 @@ bool section2 = false;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int main(void) {
-  printf("page 0%c%c%c", 255, 255, 255); // init at 9600 baud.
-  _delay_ms(20);
-
-  pwm1_set_duty(20); // sets the duty cycle to 20 %
   init();
+  pwm1_set_duty(20); // sets the duty cycle to 20 %
   int page = 0;
 
   while (1) {
     update_nextion(&page);
+    
     //Measure time //
     time_value = get_enc_period() / 1000; // gets encoder wheel time output in milliseconds
-    printf("\nTime between impulses: %u ms\n", time_value);
 
     // Read voltage; ADC conversion//
     measure_volt_adc();
 
     // Speed measurement //
     measure_speed(time_value);
-
-
   }
   return 0;
 }
