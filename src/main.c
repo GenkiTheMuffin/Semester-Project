@@ -6,7 +6,9 @@
 
 #include "adcpwm.h"
 #include "i2cmaster.h"
+#include "nextion.h"
 #include "usart.h"
+#include "util.h"
 #include <avr/io.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -122,122 +124,6 @@ int main(void) {
 }
 
 //// FUNCTION IMPLEMENTATIONS ////
-void init() {
-  uart_init();   // communication with PC - debugging
-  io_redirect(); // redirect printf to uart, text will be shown on PC or
-                 // Nextion screen
-  i2c_init();    // serial communication protocol
-  pwm1_init();   // PWM signal at pin PD5 (4 kHz)
-  adc_init();    // ADC module init
-
-  DDRC = 0xf0;  // PC3-PC0 are inputs
-  PORTC = 0x30; // (PC3-PC0 use no pullups for the ADC)
-
-  // Setup timer 1 as pure ticks counter, the clock ticks with 1024 prescaling;
-  // i.e. no interrupts //
-  TCCR1A = 0x00;
-  TCCR1B = 0xC5; // Input capture on positive edge ICP1 pin (PB0). Filter is
-                 // enabled. 1024 clock prescaler*
-  DDRB &= ~0x01; // PINB0 as input for ICP1 use
-  PORTB |= 0x01; // Enable pullup
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void button_press(uint8_t buffer[]) {
-  if (buffer[0] == 0x65) // conditioned on button press
-  {
-    for (int i = 1; i < 7; i++) // filling array with numbers from button signal
-    {
-      scanf("%c", &buffer[i]);
-    }
-  }
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void read_value(char *pReadBuffer, uint32_t *pReadValue) {
-  _delay_ms(20);
-
-  printf("get %s.val%c%c%c", "page0.n0", 255, 255,
-         255); // sends "get page0.n0.val"
-  int typeExpected = 0;
-
-  for (int i = 0; i < 8; i++) {
-    scanf("%c", &pReadBuffer[i]);
-    if (pReadBuffer[i] == 0x71) { // expect number string
-      typeExpected = NUMBER_STRING;
-      pReadBuffer[0] =
-          0x71; // move indicator to front, just to keep the nice format
-      break;
-    }
-  }
-  if (typeExpected == NUMBER_STRING) {
-    for (int i = 1; i < 8; i++) {
-      scanf("%c", &pReadBuffer[i]);
-    }
-
-    if (pReadBuffer[0] == 0x71 && pReadBuffer[5] == 0xFF &&
-        pReadBuffer[6] == 0xFF &&
-        pReadBuffer[7] == 0xFF) { // this is a complete number return
-      *pReadValue = pReadBuffer[1] | (pReadBuffer[2] << 8) |
-                    (pReadBuffer[3] << 16) | (pReadBuffer[4] << 24);
-    }
-  }
-  for (int i = 0; i < 7; i++) {
-    scanf("%c", &pReadBuffer[i]);
-    if (pReadBuffer[i] == 0x1A) // retrieve the 0xFF commands and start over
-    {
-      scanf("%c", &pReadBuffer[i]);
-      scanf("%c", &pReadBuffer[i]);
-      scanf("%c", &pReadBuffer[i]);
-      continue;
-    }
-  }
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-uint32_t get_enc_period() {
-  uint32_t time1 = 0;
-  uint32_t time2 = 0;
-
-  // wait for 1 step up
-  while (!(TIFR1 & (1 << ICF1)))
-    ;
-  time1 = ICR1;
-  TIFR1 |= (1 << ICF1);
-
-  // wait for 2 step up
-  while (!(TIFR1 & (1 << ICF1)))
-    ;
-  time2 = ICR1;
-  TIFR1 |= (1 << ICF1);
-
-  // count diference
-  uint32_t ticks = (time2) - (time1);
-
-  // return in microseconds
-  return ticks * 64L;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void measure_speed(uint32_t time) {
-  speed = (2 * M_PI * WHEEL_RADIUS / ENCODER_SLOTS) /
-          ((float)time / 1000.0f); // (calculation: distance per pulse / time)
-  printf("\nSpeed: %.1f m/s", speed);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void measure_volt_adc() {
-  adc_value = adc_read(0); // analog voltage on PC0
-  voltage = adc_value * (5.0 / 1023.0f);
-  printf("\nADC: %u | Voltage: %.3f V\r\n", adc_value, voltage);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void button_press_detect() {
   scanf("%c", &buffer[0]); // scan for first byte

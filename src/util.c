@@ -1,0 +1,60 @@
+#include "util.h"
+
+#define WHEEL_RADIUS 0.31f // wheel radius (in meters)
+#define ENCODER_SLOTS 8    // number of holes on encoder wheel
+
+void init() {
+  uart_init();   // communication with PC - debugging
+  io_redirect(); // redirect printf to uart, text will be shown on PC or
+                 // Nextion screen
+  i2c_init();    // serial communication protocol
+  pwm1_init();   // PWM signal at pin PD5 (4 kHz)
+  adc_init();    // ADC module init
+
+  DDRC = 0xf0;  // PC3-PC0 are inputs
+  PORTC = 0x30; // (PC3-PC0 use no pullups for the ADC)
+
+  // Setup timer 1 as pure ticks counter, the clock ticks with 1024 prescaling;
+  // i.e. no interrupts //
+  TCCR1A = 0x00;
+  TCCR1B = 0xC5; // Input capture on positive edge ICP1 pin (PB0). Filter is
+                 // enabled. 1024 clock prescaler*
+  DDRB &= ~0x01; // PINB0 as input for ICP1 use
+  PORTB |= 0x01; // Enable pullup
+}
+
+uint32_t get_enc_period() {
+  uint32_t time1 = 0;
+  uint32_t time2 = 0;
+
+  // wait for 1 step up
+  while (!(TIFR1 & (1 << ICF1)))
+    ;
+  time1 = ICR1;
+  TIFR1 |= (1 << ICF1);
+
+  // wait for 2 step up
+  while (!(TIFR1 & (1 << ICF1)))
+    ;
+  time2 = ICR1;
+  TIFR1 |= (1 << ICF1);
+
+  // count diference
+  uint32_t ticks = (time2) - (time1);
+
+  // return in microseconds
+  return ticks * 64L;
+}
+
+void measure_speed(uint32_t time) {
+  float speed =
+      (2 * M_PI * WHEEL_RADIUS / ENCODER_SLOTS) /
+      ((float)time / 1000.0f); // (calculation: distance per pulse / time)
+  printf("\nSpeed: %.1f m/s", speed);
+}
+
+void measure_volt_adc() {
+  int adc_value = adc_read(0); // analog voltage on PC0
+  int voltage = adc_value * (5.0 / 1023.0f);
+  printf("\nADC: %u | Voltage: %.3f V\r\n", adc_value, voltage);
+}
