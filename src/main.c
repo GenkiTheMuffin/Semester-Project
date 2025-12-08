@@ -22,7 +22,7 @@
 //// VARIABLES ////
 unsigned int time_value; // for time measurement on the optocoupler
 unsigned int adc_value;
-float voltage;
+float voltage, speed;
 
 
 // variable to check if car is in specific state
@@ -44,10 +44,10 @@ int main(void) {
     time_value = get_enc_period() / 1000; // gets encoder wheel time output in milliseconds
 
     // Read voltage; ADC conversion//
-    measure_volt_adc();
+    voltage = measure_volt_adc();
 
     // Speed measurement //
-    measure_speed(time_value);
+    speed = measure_speed(time_value);
   }
   return 0;
 }

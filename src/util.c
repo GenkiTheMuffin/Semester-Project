@@ -51,7 +51,7 @@ uint32_t get_enc_period() {
 float measure_speed(uint32_t time) {
   float speed =
       (2 * M_PI * WHEEL_RADIUS / ENCODER_SLOTS) /
-      ((float)time / 1000.0f); // (calculation: distance per pulse / time)
+      ((float)time / 1000.0f); // (calculation: distance per pulse / time between pulses)
       return speed;
 }
 
