@@ -7,7 +7,6 @@ void init() {
   uart_init();   // communication with PC - debugging
   io_redirect(); // redirect printf to uart, text will be shown on PC or
                  // Nextion screen
-  i2c_init();    // serial communication protocol
   pwm1_init();   // PWM signal at pin PD5 (4 kHz)
   adc_init();    // ADC module init
 
@@ -46,15 +45,15 @@ uint32_t get_enc_period() {
   return ticks * 64L;
 }
 
-void measure_speed(uint32_t time) {
+float measure_speed(uint32_t time) {
   float speed =
       (2 * M_PI * WHEEL_RADIUS / ENCODER_SLOTS) /
       ((float)time / 1000.0f); // (calculation: distance per pulse / time)
-  printf("\nSpeed: %.1f m/s", speed);
+      return speed;
 }
 
-void measure_volt_adc() {
+float measure_volt_adc() {
   int adc_value = adc_read(0); // analog voltage on PC0
-  int voltage = adc_value * (5.0 / 1023.0f);
-  printf("\nADC: %u | Voltage: %.3f V\r\n", adc_value, voltage);
+  float voltage = adc_value * (5.0 / 1023.0f);
+  return voltage;
 }

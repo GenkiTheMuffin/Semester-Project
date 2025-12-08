@@ -2,10 +2,9 @@
 
 void update_nextion(int *page){
     char valtype;
-    
-    //*page = get_page();
 
     if(*page == 0){
+        
         uint32_t val = read_nextion_value(&valtype);
         //TOUCH EVENT (0x65)
         if(valtype == 0x65){
