@@ -2,6 +2,7 @@
 
 #define WHEEL_RADIUS 0.31f // wheel radius (in meters)
 #define ENCODER_SLOTS 8    // number of holes on encoder wheel
+#define VOLT_SPEED 1       // voltage-speed conversion number
 
 void init() {
   uart_init();   // communication with PC - debugging
@@ -59,4 +60,15 @@ float measure_volt_adc() {
   int adc_value = adc_read(0); // analog voltage on PC0
   float voltage = adc_value * (5.0 / 1023.0f);
   return voltage;
+}
+
+void set_speed(int time,int distance, float voltage) {
+  float speed = distance/time;
+  float required_volt = speed * (float)VOLT_SPEED; // gets the required voltage for the sepcific speed value
+  pwm1_set_duty(required_volt/voltage);     // sets the pwm duty to the required voltage %
+
+   /*speed ~ voltage
+    "x" m/s = "y" volts
+    "Z": total voltage of battery ("Z" >= "y")
+    if "y" volts needed -> "y"/"Z" % of total voltage -> pwm1_set_duty("y"/"Z")*/
 }
