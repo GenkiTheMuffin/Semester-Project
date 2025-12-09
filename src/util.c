@@ -62,8 +62,8 @@ float measure_volt_adc() {
   return voltage;
 }
 
-void set_speed(int time,int distance, float voltage) {
-  float speed = distance/time;
+void set_speed(int time, int distance, float voltage) {
+  float speed = (float)(distance/time); 
   float required_volt = speed * (float)VOLT_SPEED; // gets the required voltage for the sepcific speed value
   pwm1_set_duty(required_volt/voltage);     // sets the pwm duty to the required voltage %
 

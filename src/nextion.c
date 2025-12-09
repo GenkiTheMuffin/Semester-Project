@@ -38,7 +38,7 @@ void update_nextion(int *page, int *distance1, int *distance2, int *time1, int *
                 if(valtype == 0x71) {
                     printf("page0.s2.val=%d%c%c%c", (int)val, 255,255,255);
                     printf("page0.d2.val=%d%c%c%c", (int)val, 255,255,255);
-                    *distance1 = val;
+                    *distance2 = val;
                 }
                 break;
 

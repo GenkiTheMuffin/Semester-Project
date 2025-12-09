@@ -36,27 +36,51 @@ bool section2 = false;
 
 int main(void) {
   init();
-  pwm1_set_duty(50); // sets the duty cycle to given %
   int page = 0;
   int distance1 = 1, distance2 = 3, time1 = 15, time2 = 38;
   float progressbar = 0;
   float total_distance = 0;
 
   while (1) {
+
     update_nextion(&page, &distance1, &distance2, &time1, &time2, &progressbar);
-    
-    //Measure time //
+
+    // Measure time //
     time_value = get_enc_period() / 1000; // gets encoder wheel time output in milliseconds
 
-    // Read voltage; ADC conversion//
+    // Read voltage; ADC conversion //
     voltage = measure_volt_adc();
-    printf("Voltage: %.1f", voltage);
 
     // Speed measurement //
     speed = measure_speed(time_value);
 
     // Update distance //
-    update_current_distance(speed, time_value, &total_distance);
+    update_current_distance(speed, time_value, &total_distance);    // updates the total taken distance until this moment
+
+
+    // Execute //
+    if (start && section1) {
+      set_speed(time1, distance1, voltage);   // sets speed according to section 1
+
+    } else if (start && section2) {
+      set_speed(time2, distance2, voltage);   // sets speed according to section 2
+
+    } else {
+      set_speed(1, 0, voltage);               // stops the car
+    }
+
+    if (total_distance >= distance1 && section1) {    // switches from section 1 to section 2
+      section1 = false;
+      section2 = true;
+    }
+    if (total_distance >= (distance1 + distance2)) {  // resets the sections and start
+      section1 = false;
+      section2 = false;
+      start = false;
+      total_distance = 0;
+    }
+
+ 
   }
   return 0;
 }
