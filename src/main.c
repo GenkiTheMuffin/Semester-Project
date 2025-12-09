@@ -36,9 +36,11 @@ int main(void) {
   init();
   pwm1_set_duty(20); // sets the duty cycle to 20 %
   int page = 0;
+  int distance1 = 1, distance2 = 3, time1 = 15, time2 = 38;
+  float progressbar = 0;
 
   while (1) {
-    update_nextion(&page);
+    update_nextion(&page, &distance1, &distance2, &time1, &time2, &progressbar);
     
     //Measure time //
     time_value = get_enc_period() / 1000; // gets encoder wheel time output in milliseconds

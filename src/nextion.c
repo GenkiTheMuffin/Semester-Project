@@ -1,6 +1,6 @@
 #include "nextion.h"
 
-void update_nextion(int *page){
+void update_nextion(int *page, int *distance1, int *distance2, int *time1, int *time2, float *progressbar){
     char valtype;
 
     if(*page == 0){
@@ -13,7 +13,11 @@ void update_nextion(int *page){
                 // ID 1 == Start Button / b1
             case 0x01:
                 *page = 1;
+                
                 printf("page 1%c%c%c", 255,255,255);
+
+                printf("page1.pb1.val=%d%c%c%c", *time1+*time2, 255,255,255);
+                
                 break;
 
                 //ID 5 == Slider 1 / s1
@@ -23,6 +27,7 @@ void update_nextion(int *page){
                 if(valtype == 0x71) {
                     printf("page0.s1.val=%d%c%c%c", (int)val, 255,255,255);
                     printf("page0.d1.val=%d%c%c%c", (int)val, 255,255,255);
+                    *distance1 = val;
                 }
                 break;
 
@@ -33,6 +38,7 @@ void update_nextion(int *page){
                 if(valtype == 0x71) {
                     printf("page0.s2.val=%d%c%c%c", (int)val, 255,255,255);
                     printf("page0.d2.val=%d%c%c%c", (int)val, 255,255,255);
+                    *distance1 = val;
                 }
                 break;
 
@@ -43,18 +49,19 @@ void update_nextion(int *page){
     }
     
     if(*page == 1){
+        float time = *time1 + *time2;
         printf("get %s.val%c%c%c", "page1.pb1", 255,255,255);
         uint32_t val = read_nextion_value(&valtype);
 
         if(valtype == 0x71) {
-            if(val >= 100){
+            if(*progressbar >= 100){
                 *page = 0;
                 printf("page 0%c%c%c", 255,255,255);
             }else{
-                printf("page1.pb1.val=%d%c%c%c", (int)val+1, 255,255,255);
+                *progressbar = *progressbar + (100.0/time);
+                printf("page1.pb1.val=%d%c%c%c", (int) *progressbar, 255,255,255);
             }
-            
-            
+
         }
     }
 }
