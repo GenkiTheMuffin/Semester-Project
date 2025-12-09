@@ -3,6 +3,8 @@
 #define NUMBER_STRING 1001
 #define WHEEL_RADIUS 0.31f // wheel radius (in meters)
 #define ENCODER_SLOTS 8    // number of holes on encoder wheel
+#define VOLT_SPEED 1       // voltage-speed conversion number
+
 
 #include "adcpwm.h"
 #include "i2cmaster.h"
@@ -34,7 +36,7 @@ bool section2 = false;
 
 int main(void) {
   init();
-  pwm1_set_duty(20); // sets the duty cycle to 20 %
+  pwm1_set_duty(50); // sets the duty cycle to given %
   int page = 0;
 
   while (1) {
@@ -45,6 +47,7 @@ int main(void) {
 
     // Read voltage; ADC conversion//
     voltage = measure_volt_adc();
+    printf("Voltage: %.1f", voltage);
 
     // Speed measurement //
     speed = measure_speed(time_value);
