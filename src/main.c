@@ -40,6 +40,7 @@ int main(void) {
   int page = 0;
   int distance1 = 1, distance2 = 3, time1 = 15, time2 = 38;
   float progressbar = 0;
+  float total_distance = 0;
 
   while (1) {
     update_nextion(&page, &distance1, &distance2, &time1, &time2, &progressbar);
@@ -53,6 +54,9 @@ int main(void) {
 
     // Speed measurement //
     speed = measure_speed(time_value);
+
+    // Update distance //
+    update_current_distance(speed, time_value, &total_distance);
   }
   return 0;
 }

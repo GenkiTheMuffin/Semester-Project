@@ -72,3 +72,8 @@ void set_speed(int time,int distance, float voltage) {
     "Z": total voltage of battery ("Z" >= "y")
     if "y" volts needed -> "y"/"Z" % of total voltage -> pwm1_set_duty("y"/"Z")*/
 }
+
+void update_current_distance(float speed, uint32_t time, float *total_distance) {
+  *total_distance += speed * (float)time;
+  
+}
