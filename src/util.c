@@ -1,8 +1,8 @@
 #include "util.h"
 
 #define WHEEL_RADIUS 0.31f // wheel radius (in meters)
-#define ENCODER_SLOTS 16    // number of holes on encoder wheel
-#define VOLT_SPEED 500       // voltage-speed conversion number
+#define ENCODER_SLOTS 16   // number of holes on encoder wheel
+#define VOLT_SPEED 500     // voltage-speed conversion number
 
 void init() {
   uart_init();   // communication with PC - debugging
@@ -52,8 +52,9 @@ uint32_t get_enc_period() {
 float measure_speed(uint32_t time) {
   float speed =
       (2 * M_PI * WHEEL_RADIUS / ENCODER_SLOTS) /
-      ((float)time / 1000.0f); // (calculation: distance per pulse / time between pulses)
-      return speed;
+      ((float)time /
+       1000.0f); // (calculation: distance per pulse / time between pulses)
+  return speed;
 }
 
 float measure_volt_adc() {
@@ -64,20 +65,34 @@ float measure_volt_adc() {
 
 void set_speed(int time, int distance, float voltage) {
   float speed = (float)(distance) / (float)(time);
-  float required_volt = speed * (float)VOLT_SPEED; // gets the required voltage for the sepcific speed value
-  pwm1_set_duty(required_volt/voltage);     // sets the pwm duty to the required voltage %
+  float required_volt =
+      speed *
+      (float)
+          VOLT_SPEED; // gets the required voltage for the sepcific speed value
+  pwm1_set_duty(required_volt /
+                voltage); // sets the pwm duty to the required voltage %
   printf("\ndistance: %d, time: %d", distance, time);
   printf("\ndistance/time: %f", (float)(distance) / (float)(time));
   printf("\nspeed: %.1f", speed);
-  printf("\nRequired voltage/voltage: %.1f", required_volt/voltage);
+  printf("\nRequired voltage/voltage: %.1f", required_volt / voltage);
 
-   /*speed ~ voltage
-    "x" m/s = "y" volts
-    "Z": total voltage of battery ("Z" >= "y")
-    if "y" volts needed -> "y"/"Z" % of total voltage -> pwm1_set_duty("y"/"Z")*/
+  /*speed ~ voltage
+   "x" m/s = "y" volts
+   "Z": total voltage of battery ("Z" >= "y")
+   if "y" volts needed -> "y"/"Z" % of total voltage -> pwm1_set_duty("y"/"Z")*/
 }
 
-void update_current_distance(float speed, uint32_t time, float *total_distance) {
+void update_current_distance(float speed, uint32_t time,
+                             float *total_distance) {
   *total_distance += speed * (float)time;
-  
+}
+
+void active_speed_control(float *pNeeded_speed, float *pCurrent_speed,
+                          int *pDuty, int step) {
+  if (*pCurrent_speed > *pNeeded_speed) {
+    *pDuty -= step;
+  } else if (*pCurrent_speed < *pNeeded_speed) {
+    *pDuty += step;
+  }
+  pwm1_set_duty(*pDuty);
 }
