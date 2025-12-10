@@ -2,7 +2,7 @@
 #define BAUD 9600
 #define NUMBER_STRING 1001
 #define WHEEL_RADIUS 0.31f // wheel radius (in meters)
-#define ENCODER_SLOTS 8    // number of holes on encoder wheel
+#define ENCODER_SLOTS 16    // number of holes on encoder wheel
 #define VOLT_SPEED 1       // voltage-speed conversion number
 
 
@@ -29,38 +29,31 @@ float voltage, speed;
 
 // variable to check if car is in specific state
 bool start = false;
-bool section1 = false;
+bool section1 = true;
 bool section2 = false;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int main(void) {
   init();
-  int page = 0;
-  int distance1 = 1, distance2 = 3, time1 = 15, time2 = 38;
+  int page = 1; // int page = 0;
+  int distance1 = 1, distance2 = 3, time1 = 1, time2 = 38;
   float progressbar = 0;
   float total_distance = 0;
 
   while (1) {
 
-    update_nextion(&page, &distance1, &distance2, &time1, &time2, &progressbar);
-
-    // Measure time //
-    time_value = get_enc_period() / 1000; // gets encoder wheel time output in milliseconds
-
-    // Read voltage; ADC conversion //
-    voltage = measure_volt_adc();
-
-    // Speed measurement //
-    speed = measure_speed(time_value);
-
-    // Update distance //
-    update_current_distance(speed, time_value, &total_distance);    // updates the total taken distance until this moment
-
+    //update_nextion(&page, &distance1, &distance2, &time1, &time2, &progressbar);
+    if (page == 1) {
+      start = true;
+    } else {
+      start = false;
+    }
 
     // Execute //
     if (start && section1) {
       set_speed(time1, distance1, voltage);   // sets speed according to section 1
+      
 
     } else if (start && section2) {
       set_speed(time2, distance2, voltage);   // sets speed according to section 2
@@ -80,6 +73,19 @@ int main(void) {
       total_distance = 0;
     }
 
+    if (start) {
+      // Measure time //
+      time_value = get_enc_period() / 1000; // gets encoder wheel time output in milliseconds
+
+      // Read voltage; ADC conversion //
+      voltage = measure_volt_adc();
+
+      // Speed measurement //
+      speed = measure_speed(time_value);
+
+      // Update distance //
+      update_current_distance(speed, time_value, &total_distance);    // updates the total taken distance until this moment
+    }
  
   }
   return 0;

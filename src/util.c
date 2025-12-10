@@ -1,7 +1,7 @@
 #include "util.h"
 
 #define WHEEL_RADIUS 0.31f // wheel radius (in meters)
-#define ENCODER_SLOTS 8    // number of holes on encoder wheel
+#define ENCODER_SLOTS 16    // number of holes on encoder wheel
 #define VOLT_SPEED 1       // voltage-speed conversion number
 
 void init() {
