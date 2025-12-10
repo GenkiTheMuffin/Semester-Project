@@ -2,7 +2,7 @@
 
 #define WHEEL_RADIUS 0.31f // wheel radius (in meters)
 #define ENCODER_SLOTS 16    // number of holes on encoder wheel
-#define VOLT_SPEED 1       // voltage-speed conversion number
+#define VOLT_SPEED 500       // voltage-speed conversion number
 
 void init() {
   uart_init();   // communication with PC - debugging
@@ -63,9 +63,13 @@ float measure_volt_adc() {
 }
 
 void set_speed(int time, int distance, float voltage) {
-  float speed = (float)(distance/time); 
+  float speed = (float)(distance) / (float)(time);
   float required_volt = speed * (float)VOLT_SPEED; // gets the required voltage for the sepcific speed value
   pwm1_set_duty(required_volt/voltage);     // sets the pwm duty to the required voltage %
+  printf("\ndistance: %d, time: %d", distance, time);
+  printf("\ndistance/time: %f", (float)(distance) / (float)(time));
+  printf("\nspeed: %.1f", speed);
+  printf("\nRequired voltage/voltage: %.1f", required_volt/voltage);
 
    /*speed ~ voltage
     "x" m/s = "y" volts

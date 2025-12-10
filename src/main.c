@@ -3,7 +3,7 @@
 #define NUMBER_STRING 1001
 #define WHEEL_RADIUS 0.31f // wheel radius (in meters)
 #define ENCODER_SLOTS 16    // number of holes on encoder wheel
-#define VOLT_SPEED 1       // voltage-speed conversion number
+#define VOLT_SPEED 500       // voltage-speed conversion number
 
 
 #include "adcpwm.h"
@@ -37,11 +37,13 @@ bool section2 = false;
 int main(void) {
   init();
   int page = 1; // int page = 0;
-  int distance1 = 1, distance2 = 3, time1 = 1, time2 = 38;
+  int distance1 = 1, distance2 = 3, time1 = 3, time2 = 38;
   float progressbar = 0;
   float total_distance = 0;
 
   while (1) {
+    // Read voltage; ADC conversion //
+    voltage = measure_volt_adc();
 
     //update_nextion(&page, &distance1, &distance2, &time1, &time2, &progressbar);
     if (page == 1) {
@@ -76,9 +78,6 @@ int main(void) {
     if (start) {
       // Measure time //
       time_value = get_enc_period() / 1000; // gets encoder wheel time output in milliseconds
-
-      // Read voltage; ADC conversion //
-      voltage = measure_volt_adc();
 
       // Speed measurement //
       speed = measure_speed(time_value);
