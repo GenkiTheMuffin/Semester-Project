@@ -47,8 +47,8 @@ int main(void) {
     // Read voltage; ADC conversion //
     voltage = measure_volt_adc();
 
-    // update_nextion(&page, &distance1, &distance2, &time1, &time2,
-    // &progressbar);
+    update_nextion(&page, &distance1, &distance2, &time1, &time2,
+                    &progressbar);
     if (page == 1) {
       start = true;
     } else {
@@ -57,7 +57,6 @@ int main(void) {
     // Execute //
     pwm1_set_duty(*pDuty);
     if (start && section1) {
-      time_value = get_enc_period();
       *pCurrent_speed = measure_speed(time_value);
       // set_speed(time1, distance1, voltage);   // sets speed according to
       // section 1
@@ -94,8 +93,7 @@ int main(void) {
       speed = measure_speed(time_value);
 
       // Update distance //
-      update_current_distance(speed, time_value,
-                              &total_distance); // updates the total taken
+      update_current_distance(&total_distance); // updates the total taken
                                                 // distance until this moment
     }
   }
