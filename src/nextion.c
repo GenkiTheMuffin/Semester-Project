@@ -55,8 +55,8 @@ void update_nextion(int *page, int *distance1, int *distance2, int *time1, int *
 
         if(valtype == 0x71) {
             if(*progressbar >= 100){
-                *page = 0;
-                printf("page 0%c%c%c", 255,255,255);
+                //*page = 0;
+                //printf("page 0%c%c%c", 255,255,255);
             }else{
                 *progressbar = *progressbar + (100.0/time);
                 printf("page1.pb1.val=%d%c%c%c", (int) *progressbar, 255,255,255);

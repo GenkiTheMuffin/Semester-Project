@@ -88,9 +88,12 @@ void update_current_distance(float *total_distance) {
 
 void active_speed_control(float *pNeeded_speed, float *pCurrent_speed,
                           int *pDuty, int step) {
+
   if (*pCurrent_speed > *pNeeded_speed) {
+    if(*pDuty > 50)
     *pDuty -= step;
   } else if (*pCurrent_speed < *pNeeded_speed) {
+    if (*pDuty < 100)
     *pDuty += step;
   }
   pwm1_set_duty(*pDuty);

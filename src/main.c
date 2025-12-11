@@ -33,8 +33,8 @@ bool section2 = false;
 
 int main(void) {
   init();
-  int page = 1; // int page = 0;
-  int distance1 = 1, distance2 = 3, time1 = 3, time2 = 38, duty = 50;
+  int page = 0; // int page = 0;
+  int distance1 = 1, distance2 = 3, time1 = 3, time2 = 38, duty = 100;
   float progressbar = 0;
   float total_distance = 0;
   float needed_speed_1, needed_speed_2, current_speed;
@@ -44,58 +44,54 @@ int main(void) {
   int *pDuty = &duty;
 
   while (1) {
+    
     // Read voltage; ADC conversion //
     voltage = measure_volt_adc();
 
-    update_nextion(&page, &distance1, &distance2, &time1, &time2,
-                    &progressbar);
-    if (page == 1) {
-      start = true;
-    } else {
-      start = false;
-    }
-    // Execute //
-    pwm1_set_duty(*pDuty);
-    if (start && section1) {
+    update_nextion(&page, &distance1, &distance2, &time1, &time2,&progressbar);
+
+    while(page == 1) {
+      // Execute //
+      pwm1_set_duty(*pDuty);
+
+      if (section1) {
       *pCurrent_speed = measure_speed(time_value);
       // set_speed(time1, distance1, voltage);   // sets speed according to
       // section 1
+      active_speed_control(pNeeded_speed_1, pCurrent_speed, pDuty, 2);
 
-      active_speed_control(pNeeded_speed_1, pCurrent_speed, pDuty, 5);
-
-    } else if (start && section2) {
+    } else if (section2) {
       // set_speed(time2, distance2, voltage); // sets speed according to
       // section 2
-      active_speed_control(pNeeded_speed_2, pCurrent_speed, pDuty, 5);
+      active_speed_control(pNeeded_speed_2, pCurrent_speed, pDuty, 2);
     } else {
-      set_speed(1, 0, voltage); // stops the car
+      pwm1_set_duty(0); // stops the car
     }
 
-    if (total_distance >= distance1 &&
-        section1) { // switches from section 1 to section 2
+    if (total_distance >= distance1 && section1) { // switches from section 1 to section 2
       section1 = false;
       section2 = true;
     }
-    if (total_distance >=
-        (distance1 + distance2)) { // resets the sections and start
+    if (total_distance >= (distance1 + distance2)) { // resets the sections and start
       section1 = false;
       section2 = false;
-      start = false;
+      page = 0;
       total_distance = 0;
+      printf("page 0%c%c%c", 255,255,255);
+      pwm1_set_duty(0);
+
     }
+    // Measure time //
+    time_value = get_enc_period() / 1000; // gets encoder wheel time output in milliseconds
 
-    if (start) {
-      // Measure time //
-      time_value = get_enc_period() /
-                   1000; // gets encoder wheel time output in milliseconds
+    // Speed measurement //
+    speed = measure_speed(time_value);
 
-      // Speed measurement //
-      speed = measure_speed(time_value);
+    // Update distance //
+    update_current_distance(&total_distance); // updates the total taken
 
-      // Update distance //
-      update_current_distance(&total_distance); // updates the total taken
-                                                // distance until this moment
     }
+    
   }
   return 0;
 }
