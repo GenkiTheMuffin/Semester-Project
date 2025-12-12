@@ -111,7 +111,7 @@ int main(void) {
     printf("page1.x0.val=%d%c%c%c", (int)(total_distance*100), 255,255,255);
     printf("page1.x1.val=%d%c%c%c", (int)(*pNeeded_speed_1*100), 255,255,255);
     printf("page1.x2.val=%d%c%c%c", (int)(*pCurrent_speed*100) , 255,255,255);
-    printf("page1.x3.val=%d%c%c%c", (*pNeeded_speed_2*100) , 255,255,255);
+    printf("page1.x3.val=%d%c%c%c", (int)(*pNeeded_speed_2*100) , 255,255,255);
     
 
     }
