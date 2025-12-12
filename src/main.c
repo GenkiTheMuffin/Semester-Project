@@ -50,6 +50,8 @@ int main(void) {
 
     // Updates the display //
     update_nextion(&page, &distance1, &distance2, &time1, &time2, &progressbar, &total_distance);
+    needed_speed_1 = distance1/time1;
+    needed_speed_2 = distance2/time2;
 
 
     while(page == 1) {
@@ -58,10 +60,10 @@ int main(void) {
       *pCurrent_speed = measure_speed(time_value);    // gets the current speed
       
     if (section1) {
-      active_speed_control(pNeeded_speed_1, pCurrent_speed, pDuty, 2);  // sets speed according to section 1
+      active_speed_control(pNeeded_speed_1, pCurrent_speed, pDuty, 5);  // sets speed according to section 1
 
     } else if (section2) {
-      active_speed_control(pNeeded_speed_2, pCurrent_speed, pDuty, 2);  // sets speed according to section 2
+      active_speed_control(pNeeded_speed_2, pCurrent_speed, pDuty, 5);  // sets speed according to section 2
 
     } else {
       pwm1_set_duty(0);   // stops the car
@@ -77,6 +79,7 @@ int main(void) {
       page = 0;
       total_distance = 0;
       progressbar = 0;
+      pwm1_set_duty(0);   // stops the car
       printf("page 0%c%c%c", 255,255,255);
 
     }
@@ -90,7 +93,25 @@ int main(void) {
     update_current_distance(&total_distance); // updates the total taken distance until this moment
 
     // Updates the display //
-    update_nextion(&page, &distance1, &distance2, &time1, &time2, &progressbar, &total_distance);
+    //update_nextion(&page, &distance1, &distance2, &time1, &time2, &progressbar, &total_distance);
+    
+    progressbar += (int)((total_distance / (distance1 + distance2)) * 100);   // calculates the progress % based on the distance
+
+
+
+    printf("page1.n0.val=%d%c%c%c", *pDuty, 255, 255, 255);
+    printf("page1.pb1.val=%d%c%c%c", (int) progressbar, 255,255,255);
+    printf("page1.x0.vvs1=%d%c%c%c", 2, 255,255,255);
+    printf("page1.x1.vvs1=%d%c%c%c", 2, 255,255,255);
+    printf("page1.x2.vvs1=%d%c%c%c", 2, 255,255,255);
+    printf("page1.x3.vvs1=%d%c%c%c", 2, 255,255,255);
+    
+
+    printf("page1.x0.val=%d%c%c%c", (int)(total_distance*100), 255,255,255);
+    printf("page1.x1.val=%d%c%c%c", (int)(*pNeeded_speed_2*100), 255,255,255);
+    printf("page1.x2.val=%d%c%c%c",(int)(*pCurrent_speed*100) , 255,255,255);
+    printf("page1.x3.val=%d%c%c%c",(int)(*pNeeded_speed_1*100) , 255,255,255);
+    
 
     }
     

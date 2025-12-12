@@ -1,6 +1,6 @@
 #include "util.h"
 
-#define WHEEL_RADIUS 0.31f // wheel radius (in meters)
+#define WHEEL_RADIUS 0.031f // wheel radius (in meters)
 #define ENCODER_SLOTS 16   // number of holes on encoder wheel
 #define VOLT_SPEED 500     // voltage-speed conversion number
 
@@ -50,7 +50,7 @@ uint32_t get_enc_period() {
 }
 
 float measure_speed(uint32_t time) {
-  float speed = (2 * M_PI * WHEEL_RADIUS / ENCODER_SLOTS) / ((float)time / 1000.0f); // (calculation: distance per pulse / time between pulses)
+  float speed = ((2 * M_PI * WHEEL_RADIUS) / ENCODER_SLOTS) / ((float)time / 1000.0); // (calculation: distance per pulse / time between pulses)
   return speed;
 }
 
@@ -67,14 +67,14 @@ void set_speed(int time, int distance, float voltage) {
 }
 
 void update_current_distance(float *total_distance) {
-  *total_distance += (2 * M_PI * WHEEL_RADIUS / ENCODER_SLOTS);   // adds the distance the car takes between 2 optocoupler pulses
+  *total_distance += ((2 * M_PI * WHEEL_RADIUS) / ENCODER_SLOTS);   // adds the distance the car takes between 2 optocoupler pulses
 }
 
 void active_speed_control(float *pNeeded_speed, float *pCurrent_speed,
                           int *pDuty, int step) {
 
   if (*pCurrent_speed > *pNeeded_speed) {
-    if(*pDuty > 30)
+    if(*pDuty > 40)
       *pDuty -= step;
   } else if (*pCurrent_speed < *pNeeded_speed) {
     if (*pDuty < 100)
