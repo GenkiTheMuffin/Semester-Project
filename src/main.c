@@ -33,7 +33,7 @@ bool section2 = false;
 
 int main(void) {
   init();
-  int page = 0; // int page = 0;
+  int page = 0;
   int distance1 = 1, distance2 = 3, time1 = 3, time2 = 5, duty = 100;
   float progressbar = 0;
   float total_distance = 0;
@@ -50,6 +50,7 @@ int main(void) {
 
     // Updates the display //
     update_nextion(&page, &distance1, &distance2, &time1, &time2, &progressbar, &total_distance);
+    _delay_ms(10);
     needed_speed_1 = (float)distance1/time1;
     needed_speed_2 = (float)distance2/time2;
 
@@ -108,9 +109,9 @@ int main(void) {
     
 
     printf("page1.x0.val=%d%c%c%c", (int)(total_distance*100), 255,255,255);
-    printf("page1.x1.val=%d%c%c%c", (int)(*pNeeded_speed_2*100), 255,255,255);
+    printf("page1.x1.val=%d%c%c%c", (int)(*pNeeded_speed_1*100), 255,255,255);
     printf("page1.x2.val=%d%c%c%c", (int)(*pCurrent_speed*100) , 255,255,255);
-    printf("page1.x3.val=%d%c%c%c", (int)(*pNeeded_speed_1*100) , 255,255,255);
+    printf("page1.x3.val=%d%c%c%c", (*pNeeded_speed_2*100) , 255,255,255);
     
 
     }
