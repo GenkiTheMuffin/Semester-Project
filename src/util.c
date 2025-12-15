@@ -8,6 +8,8 @@
 static volatile uint32_t last_capture = 0;
 volatile float encoder_interval_ms;
 
+volatile float total_distance = 0;
+
 void init() {
   uart_init();   // communication with PC - debugging
   io_redirect(); // redirect printf to uart, text will be shown on PC or
@@ -40,6 +42,7 @@ ISR(TIMER1_CAPT_vect) {
   encoder_interval_ms = recent_capture - last_capture;
   encoder_interval_ms *= 0.064f;        // converts the ticks to milliseconds (with the prescaler set to 1024)
   last_capture = recent_capture;
+  update_current_distance(total_distance);  // updates the taken distance between the 2 pulses (1/16 of a full wheel-turn)
 }
 
 uint32_t get_enc_period() {
@@ -80,8 +83,8 @@ void set_speed(int time, int distance, float voltage) {
   pwm1_set_duty(required_volt / voltage);          // sets the pwm duty to the required voltage %
 }
 
-void update_current_distance(float *total_distance) {
-  *total_distance += ((2 * M_PI * WHEEL_RADIUS) / ENCODER_SLOTS);   // adds the distance the car takes between 2 optocoupler pulses
+void update_current_distance(float total_distance) {
+  total_distance += ((2 * M_PI * WHEEL_RADIUS) / ENCODER_SLOTS);   // adds the distance the car takes between 2 optocoupler pulses
 }
 
 void active_speed_control(float *pNeeded_speed, float *pCurrent_speed, int *pDuty, int step) {
