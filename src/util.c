@@ -85,7 +85,7 @@ void set_speed(int time, int distance, float voltage) {
 }
 
 void update_current_distance() {
-  total_distance += ((2 * M_PI * WHEEL_RADIUS) / ENCODER_SLOTS) * 0.8;   // adds the distance the car takes between 2 optocoupler pulses
+  total_distance += ((2 * M_PI * WHEEL_RADIUS) / ENCODER_SLOTS) * 0.6;   // adds the distance the car takes between 2 optocoupler pulses
 }
 
 void active_speed_control(float *pNeeded_speed, float *pCurrent_speed, int *pDuty, int step) {
