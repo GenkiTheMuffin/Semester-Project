@@ -51,7 +51,7 @@ int main(void) {
 
     // Updates the display //
     update_nextion(&page, &distance1, &distance2, &time1, &time2, &progressbar, total_distance);
-    _delay_ms(10);
+    _delay_ms(100);
     needed_speed_1 = (float)distance1/time1;
     needed_speed_2 = (float)distance2/time2;
 
@@ -76,13 +76,14 @@ int main(void) {
       section2 = true;
     }
     if (total_distance >= (distance1 + distance2)) { // resets the sections and start
-      section1 = false;
+      section1 = true;
       section2 = false;
-      page = 0;
+      start = false;
       total_distance = 0;
       progressbar = 0;
       pwm1_set_duty(0);   // stops the car
       printf("page 0%c%c%c", 255,255,255);
+      page = 0;
 
     }
 
