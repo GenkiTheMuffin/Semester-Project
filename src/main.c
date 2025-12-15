@@ -33,11 +33,7 @@ bool section2 = false;
 
 int main(void) {
   init();
-<<<<<<< Updated upstream
   int page = 0;
-=======
-  int page = 0; // int page = 0;
->>>>>>> Stashed changes
   int distance1 = 1, distance2 = 3, time1 = 3, time2 = 5, duty = 100;
   float progressbar = 0;
   float total_distance = 0;
@@ -96,9 +92,6 @@ int main(void) {
 
     // Update distance //
     update_current_distance(&total_distance); // updates the total taken distance until this moment
-
-    // Updates the display //
-    //update_nextion(&page, &distance1, &distance2, &time1, &time2, &progressbar, &total_distance);
     
     progressbar = (int)((total_distance / (distance1 + distance2)) * 100);   // calculates the progress % based on the distance
 

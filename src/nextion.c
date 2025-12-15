@@ -16,7 +16,7 @@ void update_nextion(int *page, int *distance1, int *distance2, int *time1, int *
                 
                 printf("page 1%c%c%c", 255,255,255);
 
-                printf("page1.pb1.val=%d%c%c%c", *time1+*time2, 255,255,255);
+                printf("page1.pb1.val=%d%c%c%c", 100, 255,255,255);   // sets the progress bar to 100 units
                 
                 break;
 
