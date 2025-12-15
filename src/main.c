@@ -50,7 +50,7 @@ int main(void) {
     voltage = measure_volt_adc();
 
     // Updates the display //
-    update_nextion(&page, &distance1, &distance2, &time1, &time2, &progressbar, &total_distance);
+    update_nextion(&page, &distance1, &distance2, &time1, &time2, &progressbar, total_distance);
     _delay_ms(10);
     needed_speed_1 = (float)distance1/time1;
     needed_speed_2 = (float)distance2/time2;

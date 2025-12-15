@@ -1,6 +1,6 @@
 #include "nextion.h"
 
-void update_nextion(int *page, int *distance1, int *distance2, int *time1, int *time2, float *progressbar, float *total_distance){
+void update_nextion(int *page, int *distance1, int *distance2, int *time1, int *time2, float *progressbar, float total_distance){
     char valtype;
 
     if(*page == 0){
@@ -57,7 +57,7 @@ void update_nextion(int *page, int *distance1, int *distance2, int *time1, int *
                 //*page = 0;
                 //printf("page 0%c%c%c", 255,255,255);
             }else{
-                *progressbar += ((int)(*total_distance / (*distance1 + *distance2))) * 100;   // calculates the progress % based on the distance
+                *progressbar += ((int)(total_distance / (*distance1 + *distance2))) * 100;   // calculates the progress % based on the distance
                 printf("page1.pb1.val=%d%c%c%c", (int) *progressbar, 255,255,255);
             }
 
