@@ -41,7 +41,18 @@ void update_nextion(int *page, int *distance1, int *distance2, int *time1, int *
                     *distance2 = val;
                 }
                 break;
-
+                
+                //ID 4 == Timer button 1 and 2 / t1 and t2
+                case 0x04:
+                printf("get %s.val%c%c%c", "page0.t1", 255,255,255);
+                val = read_nextion_value(&valtype);
+                if(valtype == 0x71) {
+                    printf("page0.t1.val=%d%c%c%c", (int)val, 255,255,255);
+                    *time1 = val;
+                    printf("page0.t2.val=%d%c%c%c", (int)val, 255,255,255);
+                    *time2 = val;
+                }
+                break;
        
 
             default:
