@@ -38,7 +38,7 @@ void init() {
 }
 
 ISR(TIMER1_CAPT_vect) {
-  uint32_t recent_capture = ICR1;        // gets the current system time
+  uint32_t recent_capture = ICR1;       // gets the current system time
   encoder_interval_ms = recent_capture - last_capture;
   encoder_interval_ms *= 0.064f;        // converts the ticks to milliseconds (with the prescaler set to 1024)
   last_capture = recent_capture;
