@@ -1,8 +1,12 @@
 #include "util.h"
+#include <avr/interrupt.h>
 
 #define WHEEL_RADIUS 0.031f // wheel radius (in meters)
 #define ENCODER_SLOTS 16   // number of holes on encoder wheel
 #define VOLT_SPEED 500     // voltage-speed conversion number
+
+static volatile uint32_t last_capture = 0;
+volatile float encoder_interval_ms;
 
 void init() {
   uart_init();   // communication with PC - debugging
@@ -22,8 +26,20 @@ void init() {
   DDRB &= ~0x01; // PINB0 as input for ICP1 use
   PORTB |= 0x01; // Enable pullup
 
+  TIMSK1 |= (1 << ICIE1); // enables input capture interrupts
+  TCNT1 = 0;  // resets counter
+
+  sei();  // enables interrupts
+
   printf("page 0%c%c%c", 255, 255, 255); // init at 9600 baud.
   _delay_ms(20);
+}
+
+ISR(TIMER1_CAPT_vect) {
+  uint32_t recent_capture = ICR1; // gets the current system time
+  encoder_interval_ms = recent_capture - last_capture;
+  encoder_interval_ms *= 0.064f;        // converts the ticks to milliseconds (with the prescaler set to 1024)
+  last_capture = recent_capture;
 }
 
 uint32_t get_enc_period() {
@@ -31,14 +47,12 @@ uint32_t get_enc_period() {
   uint32_t time2 = 0;
 
   // wait for 1 step up
-  while (!(TIFR1 & (1 << ICF1)))
-    ;
+  while (!(TIFR1 & (1 << ICF1)));
   time1 = ICR1;
   TIFR1 |= (1 << ICF1);
 
   // wait for 2 step up
-  while (!(TIFR1 & (1 << ICF1)))
-    ;
+  while (!(TIFR1 & (1 << ICF1)));
   time2 = ICR1;
   TIFR1 |= (1 << ICF1);
 
@@ -49,8 +63,8 @@ uint32_t get_enc_period() {
   return ticks * 64L;
 }
 
-float measure_speed(uint32_t time) {
-  float speed = ((2 * M_PI * WHEEL_RADIUS) / ENCODER_SLOTS) / ((float)time / 1000.0); // (calculation: distance per pulse / time between pulses)
+float measure_speed() {
+  float speed = ((2 * M_PI * WHEEL_RADIUS) / ENCODER_SLOTS) / (encoder_interval_ms / 1000.0); // (calculation: distance per pulse / time between pulses)
   return speed;
 }
 
@@ -70,9 +84,7 @@ void update_current_distance(float *total_distance) {
   *total_distance += ((2 * M_PI * WHEEL_RADIUS) / ENCODER_SLOTS);   // adds the distance the car takes between 2 optocoupler pulses
 }
 
-void active_speed_control(float *pNeeded_speed, float *pCurrent_speed,
-                          int *pDuty, int step) {
-
+void active_speed_control(float *pNeeded_speed, float *pCurrent_speed, int *pDuty, int step) {
   if (*pCurrent_speed > *pNeeded_speed) {
     if(*pDuty > 40)
       *pDuty -= step;

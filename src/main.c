@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <util/delay.h>
+#include <avr/interrupt.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -58,7 +59,7 @@ int main(void) {
     while(page == 1) {
       // Execute //
       pwm1_set_duty(*pDuty);                          // sets the motor voltage to the required value
-      *pCurrent_speed = measure_speed(time_value);    // gets the current speed
+      *pCurrent_speed = measure_speed(encoder_interval_ms);    // gets the current speed
       
     if (section1) {
       active_speed_control(pNeeded_speed_1, pCurrent_speed, pDuty, 5);  // sets speed according to section 1
@@ -84,17 +85,14 @@ int main(void) {
       printf("page 0%c%c%c", 255,255,255);
 
     }
-    // Measure time //
-    time_value = get_enc_period() / 1000; // gets encoder wheel time output in milliseconds
 
     // Speed measurement //
-    speed = measure_speed(time_value);
+    speed = measure_speed();
 
     // Update distance //
     update_current_distance(&total_distance); // updates the total taken distance until this moment
     
     progressbar = (int)((total_distance / (distance1 + distance2)) * 100);   // calculates the progress % based on the distance
-
 
 
     printf("page1.n0.val=%d%c%c%c", *pDuty, 255, 255, 255);
