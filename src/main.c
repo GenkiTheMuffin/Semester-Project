@@ -58,8 +58,8 @@ int main(void) {
 
     while(page == 1) {
       // Execute //
-      pwm1_set_duty(*pDuty);                          // sets the motor voltage to the required value
-      *pCurrent_speed = measure_speed(encoder_interval_ms);    // gets the current speed
+      pwm1_set_duty(*pDuty);                // sets the motor voltage to the required value
+      *pCurrent_speed = measure_speed();    // gets the current speed
       
     if (section1) {
       active_speed_control(pNeeded_speed_1, pCurrent_speed, pDuty, 5);  // sets speed according to section 1
@@ -104,6 +104,7 @@ int main(void) {
     printf("page1.x1.val=%d%c%c%c", (int)(*pNeeded_speed_1*100), 255,255,255);
     printf("page1.x2.val=%d%c%c%c", (int)(*pCurrent_speed*100) , 255,255,255);
     printf("page1.x3.val=%d%c%c%c", (int)(*pNeeded_speed_2*100) , 255,255,255);
+
     
 
     }

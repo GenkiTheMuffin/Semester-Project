@@ -42,6 +42,8 @@ void update_nextion(int *page, int *distance1, int *distance2, int *time1, int *
                 }
                 break;
 
+       
+
             default:
                 break;
             }
